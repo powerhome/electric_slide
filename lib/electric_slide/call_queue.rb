@@ -390,7 +390,8 @@ class ElectricSlide
       agent_call.on_unjoined do
        ignoring_ended_calls { agent_call.hangup }
        ignoring_ended_calls do
-         queued_call.hangup if queued_call[:call_transferring_to].blank?
+         queued_call.hangup if queued_call[:electric_slide_transferring_to].blank?
+         queued_call[:electric_slide_transferring_to] = nil
        end
       end
 
