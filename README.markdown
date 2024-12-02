@@ -163,6 +163,12 @@ call.join metadata[:caller] if confirm!
 
 where `confirm!` is your logic for deciding if you want the call to be connected or not. Hanging up during the confirmation controller or letting it finish without any action will result in the call being sent to the next agent.
 
+Call Variables
+--------------
+
+There are special behaviors when specific variables exist on calls:
+* `electric_slide_transferring_to` - when containing a truthy value, the queued call is preserved instead of being hung up on when an agent call is unjoined; this is particularly useful for transferring calls, where you want to keep the queued call alive so that it can be enqueued somewhere else and have the agent call hang up
+
 Credits
 -------
 

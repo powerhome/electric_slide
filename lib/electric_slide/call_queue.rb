@@ -391,8 +391,12 @@ class ElectricSlide
         ignoring_ended_calls { agent_call.hangup }
 
         ignoring_ended_calls do
-          queued_call.hangup if queued_call[:electric_slide_transferring_to].blank?
-          queued_call[:electric_slide_transferring_to] = nil
+          if queued_call[:electric_slide_transferring_to].present?
+            logger.info "Skipping hangup on Call #{queued_call.id} due to transfer to #{queued_call[:electric_slide_transferring_to]}"
+            queued_call[:electric_slide_transferring_to] = nil
+          else
+            queued_call.hangup
+          end
         end
       end
 
