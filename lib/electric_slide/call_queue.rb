@@ -388,8 +388,16 @@ class ElectricSlide
       queued_call.on_end { ignoring_ended_calls { agent_call.hangup } }
 
       agent_call.on_unjoined do
-       ignoring_ended_calls { agent_call.hangup }
-       ignoring_ended_calls { queued_call.hangup }
+        ignoring_ended_calls { agent_call.hangup }
+
+        ignoring_ended_calls do
+          if queued_call[:electric_slide_transferring_to].present?
+            logger.info "Skipping hangup on Call #{queued_call.id} due to transfer to #{queued_call[:electric_slide_transferring_to]}"
+            queued_call[:electric_slide_transferring_to] = nil
+          else
+            queued_call.hangup
+          end
+        end
       end
 
       # Track whether the agent actually talks to the queued_call
@@ -403,7 +411,7 @@ class ElectricSlide
         # Ensure we don't return an agent that was removed or paused
         old_call = agent.call
         conditionally_return_agent agent
-        agent.call = nil if agent_return_method == :manual || agent.call == old_call 
+        agent.call = nil if agent_return_method == :manual || agent.call == old_call
 
         agent.callback :disconnect, queue, agent_call, queued_call
 
